@@ -14,7 +14,7 @@ stages:
     jobs:
     - deployment: 'deploy_to_ns570403'
       environment:
-        name: NS570403
+        name: Personal-Public-NS570403
         resourceType: VirtualMachine
 
       strategy:
