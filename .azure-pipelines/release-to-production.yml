@@ -16,6 +16,8 @@ stages:
       environment:
         name: platform-dedi-prd
         resourceType: VirtualMachine
+      variables:
+        - group: Cloudflare
 
       strategy:
         runOnce:
@@ -36,4 +38,5 @@ stages:
               inputs:
                 targetType: 'filePath'
                 filePath: 'rotate-iis-certificates.ps1'
+                arguments: '-cloudflareApiKey $(API-KEY)'
                 pwsh: true
