@@ -1,8 +1,11 @@
 param(
-    [securestring]$cloudflareApiKey
+    [String]$cloudflareApiKey
 )
 
 Write-Host "Rotating IIS certificates on $env:COMPUTERNAME"
+
+$secureCloudflareApiKey = ConvertTo-SecureString -String $cloudflareApiKey -AsPlainText -Force
+$pArgs = @{CFToken = $secureCloudflareApiKey }
 
 # Load the configuration
 . $PSScriptRoot\config.ps1
@@ -20,6 +23,5 @@ $bindings | ForEach-Object {
     $binding = $_
 
     Write-Host "Rotating certificate for domain: '$($binding.domain)'"
-    $pArgs = @{CFToken = $apiKey }
     New-PACertificate $binding.domain -AcceptTOS -Contact $adminEmail -Plugin Cloudflare -PluginArgs $pArgs
 }
