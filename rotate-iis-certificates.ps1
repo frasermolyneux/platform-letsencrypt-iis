@@ -5,6 +5,7 @@ Write-Host "Rotating IIS certificates on $env:COMPUTERNAME"
 . $PSScriptRoot\config.ps1
 
 # Install required modules
+Get-PSRepository | Write-Host
 Find-Module -Name ACMESharp | Install-Module -Scope CurrentUser
 
 # Rotate certificates for required bindings
