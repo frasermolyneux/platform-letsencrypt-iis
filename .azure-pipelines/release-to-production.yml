@@ -12,9 +12,9 @@ stages:
   - stage: deploy
 
     jobs:
-    - deployment: 'deploy_to_ns570403'
+    - deployment: 'deploy_to_dedi_prd'
       environment:
-        name: Personal-Public-NS570403
+        name: platform-dedi-prd
         resourceType: VirtualMachine
 
       strategy:
