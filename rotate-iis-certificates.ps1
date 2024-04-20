@@ -1,5 +1,5 @@
 
-Write-Information "Rotating IIS certificates on $env:COMPUTERNAME"
+Write-Host "Rotating IIS certificates on $env:COMPUTERNAME"
 
 # Load the configuration
 . $PSScriptRoot\config.ps1
@@ -7,5 +7,5 @@ Write-Information "Rotating IIS certificates on $env:COMPUTERNAME"
 $bindings | ForEach-Object {
     $binding = $_
 
-    Write-Information "Rotating certificate for domain: '$($binding.domain)'"
+    Write-Host "Rotating certificate for domain: '$($binding.domain)'"
 }
