@@ -6,7 +6,7 @@ Write-Host "Rotating IIS certificates on $env:COMPUTERNAME"
 
 # Install required modules
 Get-PSRepository | Write-Host
-Find-Module -Name ACMESharp | Install-Module -Scope CurrentUser
+Find-Module -Name ACMESharp | Install-Module -Scope CurrentUser -AcceptLicense
 
 # Rotate certificates for required bindings
 $bindings | ForEach-Object {
