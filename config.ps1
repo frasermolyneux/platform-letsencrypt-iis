@@ -1,6 +1,6 @@
 $bindings = @(
     @{
-        $domain      = "redirect.xtremeidiots.net"
-        $iisSiteName = "redirect.xtremeidiots.net"
+        domain      = "redirect.xtremeidiots.net"
+        iisSiteName = "redirect.xtremeidiots.net"
     }
 )
