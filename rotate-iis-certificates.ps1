@@ -14,12 +14,14 @@ $pArgs = @{CFToken = $secureCloudflareApiKey }
 Get-PSRepository | Write-Host
 Find-Module -Name Posh-ACME | Install-Module -Scope CurrentUser -AcceptLicense -Confirm:$False -Force
 Find-Module -Name Posh-ACME.Deploy | Install-Module -Scope CurrentUser -AcceptLicense -Confirm:$False -Force
-Import-Module Posh-ACME
-Import-Module Posh-ACME.Deploy
 
 # Configure Posh-ACME
 $env:POSHACME_HOME = 'C:\ACME'
 New-Item -ItemType Directory -Path $env:POSHACME_HOME
+
+# Import required modules
+Import-Module Posh-ACME
+Import-Module Posh-ACME.Deploy
 
 # Use Lets Encrypt Staging environment
 Set-PAServer LE_STAGE
