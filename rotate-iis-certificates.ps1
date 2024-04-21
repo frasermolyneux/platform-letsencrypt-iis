@@ -21,7 +21,7 @@ if (-not (Test-Path $env:POSHACME_HOME)) {
 # Import required modules
 Import-Module Posh-ACME
 Import-Module Posh-ACME.Deploy
-Import-Module WebAdministration
+Import-Module WebAdministration -SkipEditionCheck
 
 # Use Lets Encrypt Staging environment
 Set-PAServer LE_STAGE
