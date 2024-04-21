@@ -26,8 +26,8 @@ Import-Module WebAdministration
 # Load local functions
 Get-ChildItem -Path $PSScriptRoot\functions\*.ps1 | ForEach-Object { . $_.FullName }
 
-# Use Lets Encrypt Staging environment
-Set-PAServer LE_STAGE
+# Set Lets Encrypt environment
+Set-PAServer LE_PROD #LE_STAGE
 
 # Loop through all IIS sites and obtain certificates from Lets Encrypt
 Get-Website | ForEach-Object {

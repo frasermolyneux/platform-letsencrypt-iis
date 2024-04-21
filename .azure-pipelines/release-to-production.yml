@@ -3,6 +3,13 @@ trigger:
     include:
       - "main"
 
+schedules:
+- cron: '0 0 * * *'
+  displayName: Daily midnight run
+  branches:
+    include:
+    - main
+
 pr: none
 
 pool:
