@@ -45,7 +45,16 @@ Get-Website | ForEach-Object {
         Write-Host "Obtaining certificate for binding: '$hostHeader'"
         New-PACertificate $hostHeader -AcceptTOS -Contact "admin@molyneux.io" -Plugin Cloudflare -PluginArgs $pArgs -Verbose
 
+        # Renew the certificate if required
+        Submit-Renewal $hostHeader -Verbose
+
+        # Retrieve the latest certificate (either from New-PACetificate or Submit-Renewal)
+        $latestCertificate = Get-PACertificate $hostHeader
+
         # Install the certificate
-        Get-PACertificate $hostHeader | Install-PACertificate -Verbose
+        $latestCertificate | Install-PACertificate -Verbose
+
+        # Update the binding with the new certificate
+        $binding.AddSslCertificate($latestCertificate.Thumbprint, "my")
     }
 }
