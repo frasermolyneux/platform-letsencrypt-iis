@@ -50,6 +50,7 @@ function Set-IISCertificate {
 
         # check for an existing site binding
         $bindMatch = "$($IPAddress):$($Port):$($HostHeader)"
+        Write-Host "Using bind match: $bindMatch"
         $binding = Get-WebBinding -Name $SiteName -Protocol 'https' | Where-Object {
             $_.bindingInformation -eq $bindMatch
         }

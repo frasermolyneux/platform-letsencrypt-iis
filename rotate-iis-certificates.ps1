@@ -9,7 +9,7 @@ $pArgs = @{CFToken = $secureCloudflareApiKey }
 
 # Install and import required modules
 Get-PSRepository | Write-Host
-Find-Module -Name Posh-ACME | Install-Module -Scope CurrentUser -AcceptLicense -Confirm:$False -Force
+Find-Module -Name Posh-ACME | Install-Module -Scope CurrentUser -Confirm:$False -Force
 
 # Configure Posh-ACME
 $env:POSHACME_HOME = 'C:\ACME'
