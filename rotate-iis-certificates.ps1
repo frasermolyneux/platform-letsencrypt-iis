@@ -43,6 +43,9 @@ Get-Website | ForEach-Object {
         $port, $hostHeader = $binding.bindingInformation.split(':')[1..2]
 
         Write-Host "Obtaining certificate for binding: '$hostHeader'"
-        New-PACertificate $hostHeader -AcceptTOS -Contact "admin@molyneux.io" -Plugin Cloudflare -PluginArgs $pArgs -Install -Verbose
+        New-PACertificate $hostHeader -AcceptTOS -Contact "admin@molyneux.io" -Plugin Cloudflare -PluginArgs $pArgs -Verbose
+
+        # Install the certificate
+        Get-PACertificate $hostHeader | Install-PACertificate -Verbose
     }
 }
