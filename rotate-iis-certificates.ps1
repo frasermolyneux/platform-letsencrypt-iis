@@ -34,7 +34,7 @@ Get-Website | ForEach-Object {
     $bindings = Get-WebBinding -Name $site.name
 
     # Filter out bindings that are not HTTPS
-    $bindings = $bindings | Where-Object { $_.protocol -eq 'https' }
+    $binding = Get-WebBinding -Name $siteName -Protocol "https"
 
     # Loop through all bindings
     $bindings | ForEach-Object {
@@ -55,6 +55,6 @@ Get-Website | ForEach-Object {
         $latestCertificate | Install-PACertificate -Verbose
 
         # Update the binding with the new certificate
-        $binding.AddSslCertificate($latestCertificate.Thumbprint, "my")
+        (Get-WebBinding -Name $site.name -Port $binding.port -Protocol "https").AddSslCertificate($latestCertificate.Thumbprint, "my")
     }
 }
