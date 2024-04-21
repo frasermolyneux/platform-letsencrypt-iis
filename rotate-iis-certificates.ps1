@@ -7,9 +7,6 @@ Write-Host "Rotating IIS certificates on $env:COMPUTERNAME"
 $secureCloudflareApiKey = ConvertTo-SecureString -String $cloudflareApiKey -AsPlainText -Force
 $pArgs = @{CFToken = $secureCloudflareApiKey }
 
-# Load the configuration
-. $PSScriptRoot\config.ps1
-
 # Install and import required modules
 Get-PSRepository | Write-Host
 Find-Module -Name Posh-ACME | Install-Module -Scope CurrentUser -AcceptLicense -Confirm:$False -Force
