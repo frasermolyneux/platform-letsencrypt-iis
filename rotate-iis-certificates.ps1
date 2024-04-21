@@ -24,21 +24,6 @@ Import-Module Posh-ACME
 Import-Module Posh-ACME.Deploy
 Import-Module WebAdministration
 
-if (-not (Get-Command Get-IISSiteBinding -EA Ignore)) {
-
-    $module = Get-Module -ListAvailable IISAdministration -All -Verbose:$false |
-    Where-Object { $_.Version -ge [version]'1.1.0.0' } |
-    Sort-Object -Descending Version |
-    Select-Object -First 1
-
-    if (-not $PSEdition -or $PSEdition -eq 'Desktop') {
-        $module | Import-Module -Verbose:$false
-    }
-    else {
-        $module | Import-Module -UseWindowsPowerShell -Verbose:$false
-    }
-}
-
 # Use Lets Encrypt Staging environment
 Set-PAServer LE_STAGE
 
@@ -66,6 +51,6 @@ Get-Website | ForEach-Object {
 
         # Update the binding with the new certificate
         Write-Host "Updating binding with new certificate for site '$($site.name)' with host '$hostHeader' on port $port"
-        $latestCertificate | Set-IISCertificateNew -SiteName $site.name -IPAddress $ipAddress -Port $port -HostHeader $hostHeader -RemoveOldCert -RequireSNI
+        $latestCertificate | Set-IISCertificate -SiteName $site.name -IPAddress $ipAddress -Port $port -HostHeader $hostHeader -RemoveOldCert -RequireSNI
     }
 }
