@@ -48,11 +48,8 @@ Get-Website | ForEach-Object {
         # Retrieve the latest certificate (either from New-PACetificate or Submit-Renewal)
         $latestCertificate = Get-PACertificate $hostHeader
 
-        # Install the certificate
-        $latestCertificate | Install-PACertificate -Verbose
-
         # Update the binding with the new certificate
         Write-Host "Updating binding with new certificate for site '$($site.name)' with host '$hostHeader' on port $port"
-        $latestCertificate | Set-IISCertificate -SiteName $site.name -RemoveOldCert
+        $latestCertificate | Set-IISCertificate -SiteName $site.name -RemoveOldCert -RequireSNI
     }
 }
