@@ -50,6 +50,6 @@ Get-Website | ForEach-Object {
 
         # Update the binding with the new certificate
         Write-Host "Updating binding with new certificate for site '$($site.name)' with host '$hostHeader' on port $port"
-        $latestCertificate | Set-IISCertificate -SiteName $site.name -RemoveOldCert -RequireSNI
+        $latestCertificate | Set-IISCertificateNew -SiteName $site.name -RemoveOldCert -RequireSNI
     }
 }
