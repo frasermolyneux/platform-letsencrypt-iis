@@ -9,6 +9,7 @@ $pArgs = @{CFToken = $secureCloudflareApiKey }
 
 # Install and import required modules
 Get-PSRepository | Write-Host
+Find-Module -Name IISAdministration | Install-Module -Scope CurrentUser -AcceptLicense -Confirm:$False -Force
 Find-Module -Name Posh-ACME | Install-Module -Scope CurrentUser -AcceptLicense -Confirm:$False -Force
 Find-Module -Name Posh-ACME.Deploy | Install-Module -Scope CurrentUser -AcceptLicense -Confirm:$False -Force
 
