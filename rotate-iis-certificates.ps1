@@ -9,9 +9,7 @@ $pArgs = @{CFToken = $secureCloudflareApiKey }
 
 # Install and import required modules
 Get-PSRepository | Write-Host
-Find-Module -Name WebAdministration | Install-Module -Scope CurrentUser -AcceptLicense -Confirm:$False -Force
 Find-Module -Name Posh-ACME | Install-Module -Scope CurrentUser -AcceptLicense -Confirm:$False -Force
-Find-Module -Name Posh-ACME.Deploy | Install-Module -Scope CurrentUser -AcceptLicense -Confirm:$False -Force
 
 # Configure Posh-ACME
 $env:POSHACME_HOME = 'C:\ACME'
@@ -21,8 +19,10 @@ if (-not (Test-Path $env:POSHACME_HOME)) {
 
 # Import required modules
 Import-Module Posh-ACME
-Import-Module Posh-ACME.Deploy
 Import-Module WebAdministration
+
+# Load local functions
+Get-ChildItem -Path $PSScriptRoot\functions\*.ps1 | ForEach-Object { . $_.FullName }
 
 # Use Lets Encrypt Staging environment
 Set-PAServer LE_STAGE
