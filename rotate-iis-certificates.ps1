@@ -22,6 +22,7 @@ if (-not (Test-Path $env:POSHACME_HOME)) {
 # Import required modules
 Import-Module Posh-ACME
 Import-Module Posh-ACME.Deploy
+Import-Module IISAdministration -AllowClobber -Force
 Import-Module WebAdministration
 
 # Use Lets Encrypt Staging environment
