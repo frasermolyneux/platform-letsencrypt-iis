@@ -38,7 +38,7 @@ Get-Website | ForEach-Object {
     $bindings | ForEach-Object {
         $binding = $_
 
-        $port, $hostHeader = $binding.bindingInformation.split(':')[1..2]
+        $ipAddress, $port, $hostHeader = $binding.bindingInformation.split(':')[0..2]
 
         Write-Host "Obtaining certificate for binding: '$hostHeader'"
         New-PACertificate $hostHeader -AcceptTOS -Contact "admin@molyneux.io" -Plugin Cloudflare -PluginArgs $pArgs -Verbose
@@ -51,6 +51,6 @@ Get-Website | ForEach-Object {
 
         # Update the binding with the new certificate
         Write-Host "Updating binding with new certificate for site '$($site.name)' with host '$hostHeader' on port $port"
-        $latestCertificate | Set-IISCertificateNew -SiteName $site.name -RemoveOldCert -RequireSNI
+        $latestCertificate | Set-IISCertificateNew -SiteName $site.name -IPAddress $ipAddress -Port $port -RemoveOldCert -RequireSNI
     }
 }
