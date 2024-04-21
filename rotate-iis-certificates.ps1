@@ -55,6 +55,6 @@ Get-Website | ForEach-Object {
         $latestCertificate | Install-PACertificate -Verbose
 
         # Update the binding with the new certificate
-        (Get-WebBinding -Name $site.name -Port $binding.port -Protocol "https").AddSslCertificate($latestCertificate.Thumbprint, "my")
+        (Get-WebBinding -Name $site.name -Port $port -Protocol "https").AddSslCertificate($latestCertificate.Thumbprint, "my")
     }
 }
