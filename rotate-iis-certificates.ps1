@@ -9,8 +9,8 @@ $pArgs = @{CFToken = $secureCloudflareApiKey }
 
 # Install and import required modules
 Get-PSRepository | Write-Host
-Find-Module -Name Posh-ACME | Install-Module -Scope CurrentUser -Confirm:$False -Force
-Find-Module -Name Posh-ACME.Deploy | Install-Module -Scope CurrentUser -Confirm:$False -Force
+Find-Module -Name Posh-ACME | Install-Module -Scope CurrentUser -AcceptLicense -Confirm:$False -Force
+Find-Module -Name Posh-ACME.Deploy | Install-Module -Scope CurrentUser -AcceptLicense -Confirm:$False -Force
 
 # Configure Posh-ACME
 $env:POSHACME_HOME = 'C:\ACME'
@@ -21,7 +21,7 @@ if (-not (Test-Path $env:POSHACME_HOME)) {
 # Import required modules
 Import-Module Posh-ACME
 Import-Module Posh-ACME.Deploy
-Import-Module WebAdministration -SkipEditionCheck
+Import-Module WebAdministration
 
 # Use Lets Encrypt Staging environment
 Set-PAServer LE_STAGE
@@ -53,6 +53,6 @@ Get-Website | ForEach-Object {
 
         # Update the binding with the new certificate
         Write-Host "Updating binding with new certificate for site '$($site.name)' with host '$hostHeader' on port $port"
-        (Get-WebBinding -Name $site.name -Port $port -Protocol "https").AddSslCertificate($latestCertificate.Thumbprint, "my")
+        $latestCertificate | Set-IISCertificate -SiteName $site.name -RemoveOldCert
     }
 }

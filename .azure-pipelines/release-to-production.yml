@@ -30,6 +30,7 @@ stages:
             - task: PowerShell@2
               inputs:
                 targetType: 'inline'
+                pwsh: true
                 script: |
                   Write-Host "Running on $($env:COMPUTERNAME)"
 
@@ -38,3 +39,4 @@ stages:
                 targetType: 'filePath'
                 filePath: 'rotate-iis-certificates.ps1'
                 arguments: '-cloudflareApiKey $(API-KEY)'
+                pwsh: true
