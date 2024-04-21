@@ -17,7 +17,9 @@ Find-Module -Name Posh-ACME.Deploy | Install-Module -Scope CurrentUser -AcceptLi
 
 # Configure Posh-ACME
 $env:POSHACME_HOME = 'C:\ACME'
-New-Item -ItemType Directory -Path $env:POSHACME_HOME
+if (-not (Test-Path $env:POSHACME_HOME)) {
+    New-Item -ItemType Directory -Path $env:POSHACME_HOME
+}
 
 # Import required modules
 Import-Module Posh-ACME
