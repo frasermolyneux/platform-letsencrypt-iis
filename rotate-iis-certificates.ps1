@@ -24,14 +24,28 @@ if (-not (Test-Path $env:POSHACME_HOME)) {
 # Import required modules
 Import-Module Posh-ACME
 Import-Module Posh-ACME.Deploy
+Import-Module WebAdministration
 
 # Use Lets Encrypt Staging environment
 Set-PAServer LE_STAGE
 
-# Rotate certificates for required bindings
-$bindings | ForEach-Object {
-    $binding = $_
+# Loop through all IIS sites and obtain certificates from Lets Encrypt
+Get-Website | ForEach-Object {
+    $site = $_
 
-    Write-Host "Rotating certificate for domain: '$($binding.domain)'"
-    New-PACertificate $binding.domain -AcceptTOS -Contact $adminEmail -Plugin Cloudflare -PluginArgs $pArgs
+    # Get all bindings for the site
+    $bindings = Get-WebBinding -Name $site.name
+
+    # Filter out bindings that are not HTTPS
+    $bindings = $bindings | Where-Object { $_.protocol -eq 'https' }
+
+    # Loop through all bindings
+    $bindings | ForEach-Object {
+        $binding = $_
+
+        $port, $hostHeader = $binding.bindingInformation.split(':')[1..2]
+
+        Write-Host "Obtaining certificate for binding: '$hostHeader'"
+        New-PACertificate $hostHeader -AcceptTOS -Contact "admin@molyneux.io" -Plugin Cloudflare -PluginArgs $pArgs
+    }
 }
