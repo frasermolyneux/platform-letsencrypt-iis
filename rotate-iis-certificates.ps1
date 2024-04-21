@@ -4,6 +4,8 @@ param(
 
 Write-Host "Rotating IIS certificates on $env:COMPUTERNAME"
 
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+
 $secureCloudflareApiKey = ConvertTo-SecureString -String $cloudflareApiKey -AsPlainText -Force
 $pArgs = @{CFToken = $secureCloudflareApiKey }
 
