@@ -43,7 +43,7 @@ Get-Website | ForEach-Object {
         $ipAddress, $port, $hostHeader = $binding.bindingInformation.split(':')[0..2]
 
         Write-Host "Obtaining certificate for binding: '$hostHeader'"
-        New-PACertificate $hostHeader -AcceptTOS -Contact "frasermolyneux@mx-mail.io" -Plugin Cloudflare -PluginArgs $pArgs -Verbose
+        New-PACertificate $hostHeader -AcceptTOS -Contact "frasermolyneux@mx-mail.io" -Plugin Cloudflare -PluginArgs $pArgs -Verbose -Force
 
         # Renew the certificate if required
         Submit-Renewal $hostHeader -Verbose
