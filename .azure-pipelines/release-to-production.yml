@@ -4,12 +4,12 @@ trigger:
       - "main"
 
 schedules:
-- cron: '0 0 * * *'
-  displayName: Daily midnight run
-  branches:
-    include:
-    - main
-  always: true
+  - cron: "0 3 * * 4"
+    displayName: "Weekly Release (Thu 03:00 UTC)"
+    branches:
+      include:
+        - main
+    always: true
 
 pr: none
 
