@@ -1,0 +1,52 @@
+name: PR Verify
+
+on:
+  pull_request:
+    branches:
+      - main
+    types: [opened, synchronize, reopened, ready_for_review, labeled, unlabeled]
+
+permissions: {}
+
+jobs:
+  test:
+    permissions:
+      contents: read
+    if: github.event.pull_request.draft == false
+    runs-on: windows-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+      
+      - name: Run PSScriptAnalyzer
+        shell: pwsh
+        run: |
+          Install-Module -Name PSScriptAnalyzer -Force -Scope CurrentUser
+          $results = Invoke-ScriptAnalyzer -Path . -Recurse -Settings PSGallery
+          if ($results) {
+            $results | Format-Table -AutoSize
+            Write-Error "PSScriptAnalyzer found $($results.Count) issue(s)"
+            exit 1
+          }
+          Write-Host "PSScriptAnalyzer passed with no issues"
+      
+      - name: Test PowerShell Scripts Syntax
+        shell: pwsh
+        run: |
+          $scripts = Get-ChildItem -Path . -Filter *.ps1 -Recurse
+          $errors = @()
+          foreach ($script in $scripts) {
+            try {
+              $null = [System.Management.Automation.PSParser]::Tokenize((Get-Content $script.FullName -Raw), [ref]$null)
+              Write-Host "✓ $($script.Name) - Syntax OK"
+            } catch {
+              Write-Error "✗ $($script.Name) - Syntax Error: $_"
+              $errors += $script.Name
+            }
+          }
+          if ($errors.Count -gt 0) {
+            Write-Error "Found syntax errors in $($errors.Count) script(s)"
+            exit 1
+          }
+          Write-Host "`nAll PowerShell scripts have valid syntax"
