@@ -4,4 +4,11 @@ updates:
     assignees: ["frasermolyneux"]
     directory: "/"
     schedule:
-      interval: "daily"
+      interval: "weekly"
+      day: "sunday"
+      time: "05:45"
+      timezone: "Etc/UTC"
+    groups:
+      github-actions:
+        patterns:
+          - "*"

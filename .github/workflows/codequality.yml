@@ -2,7 +2,7 @@ name: Code Quality
 
 on:
   schedule:
-    - cron: "0 3 * * 1" # Monday 3am UTC
+    - cron: "45 5 * * 1"
   push:
     branches:
       - main
