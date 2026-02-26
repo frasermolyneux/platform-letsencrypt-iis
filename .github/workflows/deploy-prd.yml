@@ -1,0 +1,32 @@
+name: Deploy Prd
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+  schedule:
+    - cron: "0 3 * * 4"
+
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}
+
+jobs:
+  deploy-to-vm:
+    runs-on: [self-hosted, windows]
+
+    environment: Production
+
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run certificate rotation
+        shell: pwsh
+        run: |
+          Write-Host "Running on $($env:COMPUTERNAME)"
+          .\rotate-iis-certificates.ps1 -cloudflareApiKey "${{ secrets.CLOUDFLARE_API_KEY }}"

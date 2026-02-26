@@ -21,6 +21,13 @@ This project provides PowerShell automation to obtain and rotate Let's Encrypt S
 2. For each HTTPS binding, issues or renews certs using `New-PACertificate` and `Submit-Renewal` with the Cloudflare DNS plugin.
 3. Binds the latest certificate to each HTTPS binding, optionally removing old certs.
 
+## Deployment
+
+- **CI/CD**: GitHub Actions workflows in `.github/workflows/`.
+  - `deploy-prd.yml` — Deploys to the self-hosted Windows runner (`NS570403`). Triggers on push to `main`, weekly schedule (Thursday 03:00 UTC), and manual dispatch. Uses the `Production` GitHub environment with `CLOUDFLARE_API_KEY` secret (managed by `platform-workloads` Terraform).
+  - `build-and-test.yml` / `pr-verify.yml` — CI validation workflows.
+  - `codequality.yml` — Code quality scanning.
+
 ## Requirements
 
 - Windows Server with IIS and PowerShell 5.1+.
