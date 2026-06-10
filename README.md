@@ -23,3 +23,7 @@ Please read the [contributing](CONTRIBUTING.md) guidance; this is a learning and
 
 Please read the [security](SECURITY.md) guidance; I am always open to security feedback through email or opening an issue.
 
+## Local dev: MCP wire-up
+
+This repo is wired to consume the shared `frasermolyneux-copilot` MCP server defined in `frasermolyneux/.github-copilot` (pinned via `.github/workflows/copilot-setup-steps.yml` and declared in `.github/copilot/mcp_config.json`). For setup, the tool surface, and client-specific configuration snippets, see [`mcp-server/README.md`](https://github.com/frasermolyneux/.github-copilot/blob/v0.1.0/mcp-server/README.md) in the shared config repo.
+
