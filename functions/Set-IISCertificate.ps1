@@ -1,5 +1,5 @@
 function Set-IISCertificate {
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium')]
     param(
         [Parameter(Position = 0, ValueFromPipelineByPropertyName)]
         [Alias('Thumbprint')]
@@ -63,7 +63,9 @@ function Set-IISCertificate {
                 # update the value if it doesn't match
                 if ($binding.sslFlags -ne $sslFlags) {
                     Write-Verbose "Updating sslFlags on binding $bindMatch"
-                    Set-WebBinding -Name $SiteName -BindingInformation $bindMatch -PropertyName sslFlags -Value $sslFlags
+                    if ($PSCmdlet.ShouldProcess("$SiteName/$bindMatch", "Set sslFlags to $sslFlags")) {
+                        Set-WebBinding -Name $SiteName -BindingInformation $bindMatch -PropertyName sslFlags -Value $sslFlags
+                    }
                 }
                 else {
                     Write-Verbose "IIS Binding already exists for $bindMatch"
@@ -93,7 +95,9 @@ function Set-IISCertificate {
             }
 
             Write-Verbose "Adding new site binding for $bindMatch"
-            New-WebBinding @newBindingParams
+            if ($PSCmdlet.ShouldProcess("$SiteName/$bindMatch", 'Create HTTPS binding')) {
+                New-WebBinding @newBindingParams
+            }
         }
 
         # get a reference to the cert
@@ -147,8 +151,10 @@ function Set-IISCertificate {
                 Write-Verbose "Removing old thumbprint from $sslMatch SSL binding"
                 # Could never get Set-Item to work directly, always kept throwing param errors
                 # So instead, we'll delete and re-create
-                Get-Item IIS:\SslBindings\$sslMatch | Remove-Item
-                $addNew = $true
+                if ($PSCmdlet.ShouldProcess("IIS:\\SslBindings\\$sslMatch", 'Remove existing SSL binding')) {
+                    Get-Item IIS:\SslBindings\$sslMatch | Remove-Item
+                    $addNew = $true
+                }
             }
 
         }
@@ -157,15 +163,17 @@ function Set-IISCertificate {
         if ($addNew) {
 
             Write-Verbose "Adding certificate thumbprint $CertThumbprint"
-            if ($SupportSNI) {
-                $cert | New-Item IIS:\SslBindings\$sslMatch -SslFlags $sslFlags | Out-Null
-            }
-            else {
-                $cert | New-Item IIS:\SslBindings\$sslMatch | Out-Null
-            }
+            if ($PSCmdlet.ShouldProcess("IIS:\\SslBindings\\$sslMatch", "Bind certificate thumbprint $CertThumbprint")) {
+                if ($SupportSNI) {
+                    $cert | New-Item IIS:\SslBindings\$sslMatch -SslFlags $sslFlags | Out-Null
+                }
+                else {
+                    $cert | New-Item IIS:\SslBindings\$sslMatch | Out-Null
+                }
 
-            # remove the old cert if specified
-            if ($RemoveOldCert) { Remove-OldCert $oldThumb }
+                # remove the old cert if specified
+                if ($RemoveOldCert) { Remove-OldCert $oldThumb }
+            }
         }
 
     }

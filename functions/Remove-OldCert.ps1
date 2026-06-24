@@ -1,5 +1,5 @@
 function Remove-OldCert {
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium')]
     param(
         [string]$OldCertThumb,
         [ValidateSet('LocalMachine', 'CurrentUser')]
@@ -15,7 +15,10 @@ function Remove-OldCert {
     } |
     ForEach-Object {
         Write-Verbose "Deleting old cert with thumbprint $OldCertThumb"
-        $_ | Remove-Item
+        $target = "Cert:\$StoreLocation\$StoreName\$($_.Thumbprint)"
+        if ($PSCmdlet.ShouldProcess($target, 'Remove certificate')) {
+            $_ | Remove-Item
+        }
     }
 
 }
