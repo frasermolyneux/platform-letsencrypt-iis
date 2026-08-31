@@ -2,52 +2,49 @@
 
 ## Project Overview
 
-This project provides PowerShell automation to obtain and rotate Let's Encrypt SSL/TLS certificates for all IIS site bindings using the Posh-ACME module with Cloudflare DNS validation.
+PowerShell automation that obtains and rotates Let's Encrypt SSL/TLS certificates for every IIS site HTTPS binding, using Posh-ACME with Cloudflare DNS validation. See `AGENTS.md` for agent execution boundaries.
 
 ## Architecture
 
-- **Entry point**: `rotate-iis-certificates.ps1` orchestrates discovery of IIS sites, certificate issuance/renewal, and binding updates.
-- **Helper functions** in `functions/`:
-  - `Set-IISCertificate` - Constructs and updates IIS HTTPS bindings with SNI support.
-  - `Confirm-CertInstall` - Verifies certificate installation in the store.
-  - `Test-CertInstalled` - Checks if a certificate is already installed by thumbprint.
-  - `Import-PfxCertInternal` - Imports PFX certificates with exportable private keys.
-  - `Remove-OldCert` - Removes previous certificates after rotation.
-  - `Get-PfxThumbprint` - Retrieves thumbprint from a PFX file.
+- **Entry point**: `rotate-iis-certificates.ps1` — discovers IIS sites, issues/renews certs, updates bindings.
+- **Helpers** in `functions/`: `Set-IISCertificate` (binding + SNI updates), `Confirm-CertInstall` (verify/import orchestration), `Test-CertInstalled` (thumbprint lookup), `Import-PfxCertInternal` (exportable PFX import), `Remove-OldCert` (cleanup), `Get-PfxThumbprint` (thumbprint from file).
 
 ## Workflow
 
-1. Script enumerates IIS sites via `Get-Website`.
-2. For each HTTPS binding, issues or renews certs using `New-PACertificate` and `Submit-Renewal` with the Cloudflare DNS plugin.
-3. Binds the latest certificate to each HTTPS binding, optionally removing old certs.
+1. Enumerate IIS sites via `Get-Website`.
+2. For each HTTPS binding, issue/renew via `New-PACertificate` + `Submit-Renewal` (Cloudflare plugin).
+3. Bind the latest cert to each HTTPS binding, optionally removing the old cert.
 
-## Deployment
+## Requirements & environment
 
-- **CI/CD**: GitHub Actions workflows in `.github/workflows/`.
-  - `deploy-prd.yml` — Deploys to the self-hosted Windows runner (`NS570403`). Triggers on push to `main`, weekly schedule (Thursday 03:00 UTC), and manual dispatch. Uses the `Production` GitHub environment with `CLOUDFLARE_API_KEY` secret (managed by `platform-workloads` Terraform).
-  - `build-and-test.yml` / `pr-verify.yml` — CI validation workflows.
-  - `codequality.yml` — Code quality scanning.
-
-## Requirements
-
-- Windows Server with IIS and PowerShell 5.1+.
-- Posh-ACME and WebAdministration modules (installed/imported at runtime).
-- Cloudflare API token passed via `-cloudflareApiKey` parameter (converted to SecureString).
-- TLS 1.2 is forced for outbound calls.
-
-## Environment
-
-- `POSHACME_HOME` is set to `C:\ACME` (created if absent).
-- Targets Let's Encrypt production (`Set-PAServer LE_PROD`); staging available by toggling the comment.
+- Windows Server, IIS, PowerShell 5.1+; Posh-ACME and `WebAdministration` modules imported at runtime.
+- Cloudflare API token passed via `-cloudflareApiKey` → `SecureString`. TLS 1.2 forced for outbound calls.
+- `POSHACME_HOME` = `C:\ACME` (created if absent). Targets `LE_PROD`; staging via commented toggle.
 
 ## Conventions
 
-- SNI is required for host headers on IIS 8+.
-- Keep secrets out of logs; the script uses verbose console output but no external telemetry.
-- When adding new helper functions, dot-source them in `rotate-iis-certificates.ps1` alongside existing ones.
-- Maintain exportable key handling in `Import-PfxCertInternal`.
+- SNI required for host headers on IIS 8+.
+- No external telemetry; keep secrets out of verbose console logs.
+- Dot-source new helper functions in `rotate-iis-certificates.ps1` alongside existing ones.
+- Preserve exportable key handling in `Import-PfxCertInternal`.
 
-## Testing
+## Safety
 
-- No automated test suite exists; verify changes by running the script on a test IIS instance with Cloudflare-managed DNS records.
-- Use the `build-and-test.yml` and `pr-verify.yml` GitHub Actions workflows for CI validation.
+Certificate/binding mutations need local admin rights and an installed IIS role — unavailable on Ubuntu or non-IIS Windows. Real rotation only runs via `deploy-prd.yml` on self-hosted runner `NS570403`.
+
+## Validate
+
+Exact commands, match CI (`build-and-test.yml`/`pr-verify.yml`):
+
+```pwsh
+Install-Module -Name PSScriptAnalyzer -Force -Scope CurrentUser
+Invoke-ScriptAnalyzer -Path . -Recurse -Settings PSGallery
+```
+
+```pwsh
+Get-ChildItem -Path . -Filter *.ps1 -Recurse | ForEach-Object {
+    [System.Management.Automation.PSParser]::Tokenize((Get-Content $_.FullName -Raw), [ref]$null) | Out-Null
+}
+```
+
+Cross-platform (pwsh), safe on Ubuntu. No Pester tests exist. IIS/certificate runtime behavior needs a Windows host with IIS — state explicitly if unverified.
