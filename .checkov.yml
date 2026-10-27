@@ -1,0 +1,11 @@
+# Managed by platform-devex repository standards. Do not edit by hand.
+# Provenance: repository-standards-v1 / checkov-v1
+# Changes are proposed by pull request and require human review.
+soft-fail: false
+compact: true
+skip-check:
+  # Profile: base
+  - CKV_AZURE_41
+  - CKV_AZURE_114
+  - CKV_GHA_7
+  - CKV_GIT_1
